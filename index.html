@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thanes Lite — a free companion app for World of Warcraft: Forever</title>
+<meta name="description" content="Thanes Lite is a free Windows companion app for World of Warcraft: Forever — builds for all nine classes, a Gear Advisor with best in slot gear, a quest guide with a levelling route and zone maps, dungeons, professions and gold making. With the optional ThanesSyncLite addon.">
+<meta property="og:title" content="Thanes Lite — your companion for WoW: Forever">
+<meta property="og:description" content="Builds, best in slot gear, a levelling quest route with maps, dungeons and professions — free for Windows.">
+<meta property="og:image" content="https://martyris.github.io/Thanes-Lite/assets/gear.jpg">
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0a; --panel: #18140f; --panel-2: #211b14; --line: #3a2f22; --text: #e9dfcc; --muted: #a8977c;
+    --gold: #e3b14a; --gold-dim: #9c7a33; --gold-soft: rgba(227, 177, 74, 0.12); --red: #8e1d16;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
+  a { color: var(--gold); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  img { display: block; max-width: 100%; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+  h1, h2, h3 { font-family: Cinzel, Georgia, serif; font-weight: 700; color: var(--gold); margin: 0; letter-spacing: 0.01em; }
+  .eyebrow { font-family: ui-monospace, Consolas, monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 28px; border-radius: 6px; font-weight: 700; font-size: 16px; white-space: nowrap; text-decoration: none !important; transition: filter 0.15s; }
+  .btn:hover { filter: brightness(1.12); }
+  .btn-primary { background: linear-gradient(#b3261c, #7a160f); color: #ffe7a8; border: 1px solid #d6a640; box-shadow: 0 0 0 1px #000 inset, 0 6px 18px rgba(142, 29, 22, 0.35); }
+  .btn-ghost { background: rgba(24, 20, 15, 0.85); color: var(--text); border: 1px solid var(--line); }
+  .pill { display: inline-block; padding: 5px 13px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); font-size: 13px; color: #cdbf9f; }
+
+  /* nav */
+  nav { position: sticky; top: 0; z-index: 10; background: rgba(15, 13, 10, 0.92); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--gold); font-family: Cinzel, Georgia, serif; font-weight: 700; font-size: 20px; text-decoration: none !important; }
+  .brand img { width: 32px; height: 32px; }
+  .links { display: flex; align-items: center; gap: 24px; font-size: 14px; }
+  .links a { color: var(--muted); }
+  .links a:hover { color: var(--text); text-decoration: none; }
+  .links .btn { height: 38px; padding: 0 18px; font-size: 14px; }
+
+  /* hero */
+  .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+  .hero-bg { position: absolute; inset: 0; background: url(assets/hero-hall.jpg) center 35% / cover no-repeat; opacity: 0.55; }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,13,10,0.35), rgba(15,13,10,0.75) 60%, var(--bg)); }
+  .hero .wrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding-top: 72px; padding-bottom: 64px; }
+  .hero-logo { width: 150px; height: 150px; filter: drop-shadow(0 8px 30px rgba(0,0,0,0.7)); }
+  .hero h1 { font-size: 76px; line-height: 1; text-shadow: 0 4px 24px rgba(0,0,0,0.8); }
+  .tagline { margin: 0; font-size: 23px; color: var(--text); max-width: 760px; }
+  .sub { margin: 0; font-size: 16.5px; color: #cdbf9f; max-width: 700px; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 6px; }
+  .fine { font-size: 13px; color: var(--muted); }
+  .made-by { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 13px; border-radius: 999px; border: 1px solid var(--gold-dim); background: var(--gold-soft); font-size: 13px; color: #e8d7ac; }
+  .made-by i { width: 7px; height: 7px; border-radius: 999px; background: var(--gold); display: inline-block; }
+
+  /* shots */
+  .shot { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); box-shadow: 0 20px 60px rgba(0,0,0,0.55); }
+  .caption { margin-top: 12px; text-align: center; font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #7d6e58; }
+  .hero-shot { padding: 0 40px; margin: -24px auto 0; max-width: 1280px; position: relative; z-index: 2; }
+
+  /* deep dives */
+  section { padding: 88px 0 0; }
+  .dive { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 52px; align-items: center; padding: 44px 0 60px; border-bottom: 1px solid var(--line); }
+  .dive.flip { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+  .dive.flip .text { order: 2; }
+  .dive .text { display: flex; flex-direction: column; gap: 16px; }
+  .dive h2 { font-size: 34px; line-height: 1.15; }
+  .dive p { margin: 0; color: var(--muted); font-size: 16px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+
+  /* grid of brief features */
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; padding: 56px 0 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+  .card .thumb { height: 170px; overflow: hidden; border-bottom: 1px solid var(--line); }
+  .card .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; transform-origin: 0 0; }
+  /* (the app's content, not its sidebar: each thumb shows a piece of the screen at full size) */
+  .card .thumb.zoom img { width: 220%; height: auto; max-width: none; object-fit: unset; transform: translate(var(--x, -20%), var(--y, -18%)); }
+  .card .body { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 8px; }
+  .card h3 { font-size: 19px; }
+  .card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+
+  /* addon */
+  .addon { margin-top: 88px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center; background: linear-gradient(135deg, #1d1710, #141009); border: 1px solid var(--gold-dim); border-radius: 10px; padding: 48px 52px; }
+  .addon h2 { font-size: 32px; }
+  .addon p { margin: 0; color: #cdbf9f; }
+  .addon .text { display: flex; flex-direction: column; gap: 14px; }
+  .addon ul { margin: 0; padding-left: 20px; color: var(--muted); }
+  .addon li { margin: 4px 0; }
+  .addon code, .req code { font-family: ui-monospace, Consolas, monospace; color: var(--text); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.92em; }
+  .guide-shot { justify-self: center; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 16px 40px rgba(0,0,0,0.6); width: 100%; max-width: 420px; image-rendering: auto; }
+
+  /* made with */
+  .made { margin-top: 88px; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 48px 52px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+  .made h2 { font-size: 30px; }
+  .made p { margin: 0 0 14px; color: var(--muted); }
+  .made .lead { color: #cdbf9f; font-size: 16.5px; }
+
+  /* download */
+  .download { margin-top: 88px; position: relative; overflow: hidden; border-radius: 10px; border: 1px solid var(--line); }
+  .download .bg { position: absolute; inset: 0; background: url(assets/world-gate.jpg) center 45% / cover no-repeat; opacity: 0.75; }
+  .download::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,13,10,0.93) 30%, rgba(15,13,10,0.45) 75%, rgba(15,13,10,0.25)); }
+  .download .inner { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 40px; padding: 48px 52px; }
+  .download h2 { font-size: 32px; margin-bottom: 14px; }
+  .download p { margin: 0 0 14px; color: #cdbf9f; }
+  .req { background: rgba(24, 20, 15, 0.9); border: 1px solid var(--line); border-radius: 8px; padding: 26px 28px; }
+  .req h3 { font-size: 17px; margin-bottom: 12px; }
+  .req ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14.5px; }
+  .req li { margin: 6px 0; }
+
+  /* footer */
+  footer { margin-top: 88px; border-top: 1px solid var(--line); background: #0c0a08; }
+  footer .wrap { padding-top: 40px; padding-bottom: 44px; display: flex; flex-direction: column; gap: 22px; }
+  .credits { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 22px; font-size: 14.5px; }
+  .credits .note { color: var(--muted); font-size: 13.5px; flex-basis: 100%; }
+  .bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--muted); }
+  .bottom .left { display: flex; align-items: center; gap: 10px; }
+  .bottom img { width: 22px; height: 22px; }
+
+  @media (max-width: 900px) {
+    .wrap, .hero-shot { padding-left: 16px; padding-right: 16px; }
+    .links a:not(.btn) { display: none; }
+    .hero h1 { font-size: 48px; }
+    .hero-logo { width: 110px; height: 110px; }
+    .tagline { font-size: 19px; }
+    .dive, .dive.flip, .addon, .made, .download .inner { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .dive.flip .text { order: 0; }
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .addon, .made, .download .inner { padding: 30px 22px; }
+    .dive h2 { font-size: 27px; }
+    .btn { width: 100%; }
+    .links .btn { width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/logo.png" alt="">Thanes Lite</a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#addon">The addon</a>
+      <a href="#made">How it was made</a>
+      <a href="https://www.curseforge.com/wow/addons/thanessynclite" target="_blank" rel="noopener">CurseForge</a>
+      <a href="https://github.com/Martyris/Thanes-Lite" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.patreon.com/cw/Martyris" target="_blank" rel="noopener">Patreon</a>
+      <a class="btn btn-primary" href="https://github.com/Martyris/Thanes-Lite/releases/latest/download/ThanesLite-Setup.exe">Download</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap">
+    <img class="hero-logo" src="assets/logo.png" alt="Thanes Lite">
+    <h1>Thanes Lite</h1>
+    <p class="tagline">Your companion for World of Warcraft: Forever.</p>
+    <p class="sub">A free Windows app that knows your character: the best gear you can get at your level, a quest route to level by, dungeons and professions worth your time, and talent builds for every class. <em>Made by Martyris.</em></p>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://github.com/Martyris/Thanes-Lite/releases/latest/download/ThanesLite-Setup.exe">Download for Windows</a>
+      <a class="btn btn-ghost" href="https://www.curseforge.com/wow/addons/thanessynclite" target="_blank" rel="noopener">Get the addon on CurseForge</a>
+      <a class="btn btn-ghost" href="https://www.patreon.com/cw/Martyris" target="_blank" rel="noopener">Support on Patreon</a>
+    </div>
+    <div class="fine">Windows 10 / 11 · free · updates itself · works with or without the in-game addon</div>
+    <div class="made-by"><i></i><span>Built with the assistance of <strong>Claude Code</strong>, Anthropic's agentic coding tool. <a href="#made">How that went →</a></span></div>
+  </div>
+</header>
+
+<div class="hero-shot">
+  <div class="shot"><img src="assets/gear.jpg" alt="The Thanes Lite Gear Advisor: a paper doll of a level 30 dwarf paladin with upgrades marked, and the best upgrade for the chest slot" width="1440" height="900"></div>
+  <div class="caption">The Gear Advisor — every slot, what's best at your level, and where to get it</div>
+</div>
+
+<main class="wrap">
+  <section id="features">
+    <div class="eyebrow">What it does</div>
+
+    <div class="dive">
+      <div class="text">
+        <h2>Gear that fits your build, not someone else's</h2>
+        <p>Pick a class and a build, enter your gear (or let the addon sync it) and Thanes ranks every item you can get at your level for that build: dungeon drops, quest rewards, crafted gear and world drops. Each slot shows what you wear, the best upgrade, what opens up in the next few levels, and exactly where each item comes from.</p>
+        <p>Gear you wear with a random bonus is scored with its real stats (the addon reads them), set bonuses count when a piece completes a set, and items you can't use yet — the wrong profession, a quest out of reach — say why.</p>
+        <div class="tags"><span class="pill">Best in slot by level</span><span class="pill">Upgrade priorities</span><span class="pill">Item sources</span><span class="pill">Compare any item</span></div>
+      </div>
+      <div><div class="shot"><img src="assets/stats.jpg" alt="The Stats page: health, mana, armor and damage reduction worked out from gear and buffs" loading="lazy"></div><div class="caption">Stats — base, gear, sets and buffs, worked out like the game does</div></div>
+    </div>
+
+    <div class="dive flip">
+      <div class="text">
+        <h2>A levelling route, step by step, on the map</h2>
+        <p>The Quest Guide plans your route through a zone: which quests to pick up together, which objectives to do in one trip, where to hand them in, and which follow-ups that unlocks. It weighs XP and reward upgrades, follows chains that lead somewhere worth going, and picks up dungeon quests before you get there.</p>
+        <p>Every step is drawn on the zone map with its quest areas, and copies a <code style="font-family:ui-monospace,Consolas,monospace">/way</code> waypoint for TomTom. With the addon, your route follows you in game.</p>
+        <div class="tags"><span class="pill">Zone maps</span><span class="pill">Quest chains</span><span class="pill">Dungeon prep</span><span class="pill">TomTom waypoints</span></div>
+      </div>
+      <div><div class="shot"><img src="assets/quests.jpg" alt="The Quest Guide: the next steps of a route in the Wetlands, with the quest area drawn on the zone map" loading="lazy"></div><div class="caption">The Quest Guide — the next step and its quest area on the Wetlands map</div></div>
+    </div>
+
+    <div class="dive">
+      <div class="text">
+        <h2>Talent builds for every class — Talented perk included</h2>
+        <p>Builds for all nine classes, researched from the community's guides, drawn on WoW: Forever's own talent trees with the game's tooltips. Thanes counts the points you have at your level, including the extra points from the Talented legacy perk.</p>
+        <div class="tags"><span class="pill">All nine classes</span><span class="pill">Forever's talent trees</span><span class="pill">Talented perk</span></div>
+      </div>
+      <div><div class="shot"><img src="assets/build.jpg" alt="The Build tab: a Protection paladin build on the three talent trees" loading="lazy"></div><div class="caption">Build — the Protection paladin build on Forever's talent trees</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="thumb zoom" style="--x:-19%;--y:-20%"><img src="assets/dungeons.jpg" alt="Dungeons around your level"></div>
+        <div class="body"><h3>Dungeons</h3><p>The dungeons around your level, recommended by the upgrades they drop for your build, their quest XP and how well they fit — with boss loot and drop chances, and a checklist for your plan.</p></div>
+      </div>
+      <div class="card">
+        <div class="thumb zoom" style="--x:-19%;--y:-20%"><img src="assets/professions.jpg" alt="A Blacksmithing levelling route"></div>
+        <div class="body"><h3>Professions</h3><p>The cheapest way from your skill to the next tier, priced from your own Auctionator scans, with a shopping list, the trainer tiers and which recipes you already know.</p></div>
+      </div>
+      <div class="card">
+        <div class="thumb zoom" style="--x:-19%;--y:-41%"><img src="assets/gold.jpg" alt="Gold Making: farm spots ranked by gold an hour"></div>
+        <div class="body"><h3>Gold making</h3><p>Farm spots around your level ranked by gold an hour, what your professions can sell, and tips for your class — all from what's really listed when you scan.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="addon" id="addon">
+    <div class="text">
+      <div class="eyebrow">The companion addon</div>
+      <h2>ThanesSyncLite</h2>
+      <p>Optional, and small. It saves your character for Thanes Lite and brings your quest route into the game.</p>
+      <ul>
+        <li><strong>Syncs</strong> your level, worn gear (random bonuses included), professions and recipes, completed quests and quest log — type <code>/thanes</code> or click the Thanes button.</li>
+        <li><strong>Shows your route in game</strong>: the next step with its quests and progress, moving on by itself as you complete it, with a TomTom arrow pointing the way.</li>
+      </ul>
+      <p>Thanes Lite can install it for you, or get it from <a href="https://www.curseforge.com/wow/addons/thanessynclite" target="_blank" rel="noopener">CurseForge</a> or the <a href="https://github.com/Martyris/Thanes-Lite/releases/latest" target="_blank" rel="noopener">latest release</a>.</p>
+    </div>
+    <img class="guide-shot" src="assets/ingame-guide.jpg" alt="The in-game quest guide window: the next turn-in step with its quests" loading="lazy">
+  </div>
+
+  <div class="made" id="made">
+    <div>
+      <div class="eyebrow" style="color: var(--gold)">How it was made</div>
+      <h2 style="margin: 12px 0 16px">Built with Claude Code</h2>
+      <p class="lead">Thanes was written by Martyris working with Claude Code, Anthropic's agentic coding tool — the gear engine, the quest router, the talent trees, the profession routes and the in-game addon.</p>
+      <p>The ideas, the priorities and the playtesting came from playing WoW: Forever every day: what was missing, what felt wrong, what would actually help on the way to level 30.</p>
+    </div>
+    <div>
+      <p>Game data is read from your own WoW: Forever install — icons, maps and interface art are never shipped with the app. Quest and item data comes from the community projects credited below.</p>
+      <p>Thanes Lite is free. It's unofficial and has no connection to Blizzard Entertainment. If it helps you, you can support what Martyris makes on <a href="https://www.patreon.com/cw/Martyris" target="_blank" rel="noopener">Patreon</a>.</p>
+    </div>
+  </div>
+
+  <div class="download">
+    <div class="bg"></div>
+    <div class="inner">
+      <div>
+        <h2>Get Thanes Lite</h2>
+        <p>Download the installer and run it: Thanes Lite installs for your Windows user, makes a shortcut, and keeps itself up to date — new versions install with one click.</p>
+        <p>On first start, one click downloads the quest and item data (about half a minute), and Thanes Lite finds your WoW: Forever install by itself.</p>
+        <div class="actions" style="justify-content: flex-start">
+          <a class="btn btn-primary" href="https://github.com/Martyris/Thanes-Lite/releases/latest/download/ThanesLite-Setup.exe">Download for Windows</a>
+          <a class="btn btn-ghost" href="https://github.com/Martyris/Thanes-Lite/releases" target="_blank" rel="noopener">All releases</a>
+        </div>
+      </div>
+      <div class="req">
+        <h3>What you need</h3>
+        <ul>
+          <li>Windows 10 or 11</li>
+          <li>World of Warcraft: Forever installed (for the game's art and maps)</li>
+          <li>Optional: <a href="https://www.curseforge.com/wow/addons/tomtom" target="_blank" rel="noopener">TomTom</a> for waypoint arrows, <a href="https://www.curseforge.com/wow/addons/auctionator" target="_blank" rel="noopener">Auctionator</a> scans for auction prices</li>
+          <li>Windows may warn about a new app the first time — choose “More info”, then “Run anyway”</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="credits">
+      <span class="eyebrow">Data by</span>
+      <a href="https://foreverchanges.pro" target="_blank" rel="noopener">ForeverChanges</a>
+      <a href="https://github.com/Questie/Questie" target="_blank" rel="noopener">Questie</a>
+      <a href="https://github.com/Questie/QuestieDB" target="_blank" rel="noopener">QuestieDB</a>
+      <a href="https://github.com/ATTWoWAddon/AllTheThings" target="_blank" rel="noopener">All The Things</a>
+      <a href="https://github.com/cmangos" target="_blank" rel="noopener">cMaNGOS</a>
+      <a href="https://warcraft.wiki.gg" target="_blank" rel="noopener">warcraft.wiki.gg</a>
+      <span class="note">Quest and item data by ForeverChanges; quest, NPC and object data from Questie (QuestieDB), downloaded by each copy of the app — thank you both. Also All The Things (MIT), drop chances and monster stats from cMaNGOS (GPL-2.0), faction crests and race art from warcraft.wiki.gg (CC BY-SA). Game art is read from your own WoW install.</span>
+    </div>
+    <div class="bottom">
+      <div class="left"><img src="assets/logo.png" alt=""><span>Thanes Lite — free, by Martyris. <a href="https://github.com/Martyris/Thanes-Lite" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.curseforge.com/wow/addons/thanessynclite" target="_blank" rel="noopener">CurseForge</a> · <a href="https://www.patreon.com/cw/Martyris" target="_blank" rel="noopener">Patreon</a></span></div>
+      <span>Unofficial — not affiliated with or endorsed by Blizzard Entertainment. World of Warcraft is a trademark of Blizzard Entertainment.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
